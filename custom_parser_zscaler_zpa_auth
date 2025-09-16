@@ -1,0 +1,30 @@
+!CONFIRMWITH=PATTERN
+!CONFIRMSTRING=InternalReason.*DoubleEncryption.*TimestampConnectorZENSetupComplete
+!SCHEMA=scwx.auth
+
+match   = originalData$|(\{.*})
+json    = JSON(match[1])
+
+# sensorId$ -- Leave default value of host sending log
+sensorType$ = "Zscaler ZPA"
+eventTimeUsec$ = DATETIME(json["$.LogTimestamp"], "Mon Jan 2 15:04:05 2006")
+hostId$ = json["$.ClientZEN"]
+
+username = json["$.Username"]
+values = SPLIT(username, "@", TRUE)
+targetUserName$ = values[0]
+targetDomainName$ = values[1]
+
+
+sourceAddress$  = json["$.ClientPublicIP"]
+sourcePort$  = json["$.ServicePort"]
+applicationName$ = json["$.Application"]
+authSystem$ = json["$.Idp"]
+sessionId$ = json["$.SessionID"]
+status$ = json["$.ConnectionStatus"]
+extraFailurereason$ = json["$.InternalReason"]
+
+srcIpgeoSummary$.country$.isoCode$ = json["$.ClientCountryCode"]
+srcIpgeoSummary$.location$.latitude$ = json["$.ClientLatitude"]
+srcIpgeoSummary$.location$.longitude$ = json["$.ClientLongitude"]
+
