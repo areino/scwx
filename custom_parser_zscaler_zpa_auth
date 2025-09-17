@@ -10,21 +10,34 @@ sensorType$ = "Zscaler ZPA"
 eventTimeUsec$ = DATETIME(json["$.LogTimestamp"], "Mon Jan 2 15:04:05 2006")
 hostId$ = json["$.ClientZEN"]
 
-username = json["$.Username"]
-values = SPLIT(username, "@", TRUE)
-targetUserName$ = values[0]
-targetDomainName$ = values[1]
-
-
-sourceAddress$  = json["$.ClientPublicIP"]
-sourcePort$  = json["$.ServicePort"]
 applicationName$ = json["$.Application"]
 authSystem$ = json["$.Idp"]
 sessionId$ = json["$.SessionID"]
 status$ = json["$.ConnectionStatus"]
 extraFailurereason$ = json["$.InternalReason"]
 
+
+# IMPOSSIBLE TRAVEL
+# action is LOGON, or auth_category is ACCOUNT_LOGON and action_result is SUCCESS.
+
+action$ = 0
+action$ = IF status$ == "open" OR status$ == "active" THEN 1 ELSE 0
+
+
+# target_user_name (or source_user_name if target_identity_types is ROLE) is not empty nor blank.
+
+username = json["$.Username"]
+values = SPLIT(username, "@", TRUE)
+targetUserName$ = values[0]
+targetDomainName$ = values[1]
+
+# source_address is public routable
+
+sourceAddress$  = json["$.ClientPublicIP"]
+sourcePort$  = json["$.ServicePort"]
+
+# src_ipgeo_summary should be present.
+
 srcIpgeoSummary$.country$.isoCode$ = json["$.ClientCountryCode"]
 srcIpgeoSummary$.location$.latitude$ = json["$.ClientLatitude"]
 srcIpgeoSummary$.location$.longitude$ = json["$.ClientLongitude"]
-
