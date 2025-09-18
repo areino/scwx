@@ -1,4 +1,4 @@
-!CONFIRMWITH=PATTERN
+c!CONFIRMWITH=PATTERN
 !CONFIRMSTRING=InternalReason.*DoubleEncryption.*TimestampConnectorZENSetupComplete
 !SCHEMA=scwx.auth
 
